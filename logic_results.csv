@@ -1,0 +1,16 @@
+Student,Rule,Condition,Result
+Alice,Attendance Rule,18/20,Attendance OK
+Alice,Grading Rule,Score = 85,Pass
+Alice,Login System Rule,User=alice, Pass=1234,Login Successful
+Alice,Bonus Points Rule,Activity Done = True,Bonus Points Awarded
+Alice,Library Rule,ID Valid = True,Allowed to Borrow
+Bob,Attendance Rule,10/20,Attendance Low
+Bob,Grading Rule,Score = 65,Fail
+Bob,Login System Rule,User=bob, Pass=wrongpass,Login Failed
+Bob,Bonus Points Rule,Activity Done = False,No Bonus
+Bob,Library Rule,ID Valid = False,Not Allowed
+Charlie,Attendance Rule,16/20,Attendance OK
+Charlie,Grading Rule,Score = 75,Pass
+Charlie,Login System Rule,User=charlie, Pass=abcd,Login Failed
+Charlie,Bonus Points Rule,Activity Done = True,Bonus Points Awarded
+Charlie,Library Rule,ID Valid = True,Allowed to Borrow
