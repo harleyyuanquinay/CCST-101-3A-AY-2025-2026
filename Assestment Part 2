@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""
+Simple non-monotonic reasoning demo
+Objective: start with the default rule "If an animal is a bird, assume it can fly." and
+revise conclusions when new information (exceptions) is added.
+How to run: python3 non_monotonic_reasoner.py
+"""
+
+EXCEPTIONS = {"penguin", "ostrich", "kiwi", "emu", "cassowary", "kakapo"}
+
+
+def reason_about(animal_name: str, is_bird: bool, extra_info_flightless: bool):
+    """Produce a step-by-step reasoning trace and a final conclusion.
+
+    Parameters
+    - animal_name: the name of the animal (string)
+    - is_bird: whether the user says the animal is a bird (bool)
+    - extra_info_flightless: whether there's additional info saying it cannot fly (bool)
+    """
+    steps = []
+    steps.append(f"1) Observed: animal = '{animal_name}'.")
+
+    if not is_bird:
+        steps.append("2) Check default rule applicability: The default rule 'If animal is a bird, assume it can fly' does NOT apply because the animal is not a bird.")
+        steps.append("3) Conclusion: Cannot conclude 'can fly' from the bird default rule. (No change required)")
+        return steps, "Unknown (not a bird)"
+
+    # is a bird -> apply default
+    steps.append("2) Applicability: The animal is a bird, so we apply the default rule: assume it can fly.")
+    assumed = True
+    steps.append("3) Initial conclusion (by default rule): 'can fly' is assumed.")
+
+    # check for named exception
+    name_lower = animal_name.strip().lower()
+    if name_lower in EXCEPTIONS:
+        steps.append(f"4) New information found: '{animal_name}' is a known exception (flightless bird). This contradicts the default assumption.")
+        assumed = False
+        steps.append("5) Revision: Withdraw the earlier conclusion. Final conclusion: 'cannot fly'.")
+        return steps, "Cannot fly (known exception)"
+
+    # check for other extra info supplied by user
+    if extra_info_flightless:
+        steps.append("4) New information provided: The animal is known to be flightless or injured (user input). This contradicts the default assumption.")
+        assumed = False
+        steps.append("5) Revision: Withdraw the earlier conclusion. Final conclusion: 'cannot fly'.")
+        return steps, "Cannot fly (new info)"
+
+    # no exceptions
+    steps.append("4) No contradicting information found. The default assumption stands.")
+    steps.append("5) Final conclusion: 'can fly' (subject to future revision if new info appears).")
+    return steps, "Can fly (default)"
+
+
+if __name__ == '__main__':
+    print("Simple Non-Monotonic Reasoner")
+    print("Start with the default rule: 'If an animal is a bird, assume it can fly.'")
+    print()
+
+    while True:
+        animal = input("Enter an animal name (or type 'done' to exit): ").strip()
+        if animal.lower() == 'done':
+            print("Goodbye!")
+            break
+
+        is_bird_input = input("Is this animal a bird? (y/n): ").strip().lower()
+        is_bird = is_bird_input.startswith('y')
+
+        extra_info = False
+        if is_bird:
+            extra_input = input("Do you know any reason it might NOT fly? (e.g. 'penguin', 'injured', 'young') (y/n): ").strip().lower()
+            extra_info = extra_input.startswith('y')
+            # if user knows it's an exception but didn't type the name, we still let them signal it's flightless
+
+        print("\nReasoning steps:")
+        trace, final = reason_about(animal, is_bird, extra_info)
+        for line in trace:
+            print(line)
+
+        print(f"\nSystem's final conclusion about '{animal}': {final}")
+        print("---\n")
